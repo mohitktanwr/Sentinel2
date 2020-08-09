@@ -1,3 +1,9 @@
+!pip install sentinelhub
+!pip install datetime
+!pip install numpy
+%reload_ext autoreload
+%autoreload 2
+%matplotlib inline
 from sentinelhub import SHConfig
 
 ##layer's instance id is provided,layer should be inside configuration file 
@@ -31,25 +37,37 @@ def plot_image(image, factor=1):
 
 
 #top left and bottom right
-betsiboka_coords_wgs84 = [46.16, -16.15, 46.51, -15.58]
+betsiboka_coords_wgs84 = [46.16, -16.15, 46.56, -15.75]
 ##
 
 
 betsiboka_bbox = BBox(bbox=betsiboka_coords_wgs84, crs=CRS.WGS84)
 
-wms_true_color_request = WmsRequest(
-    layer='1',
+wms_true_color_request = WcsRequest(
+    data_folder='test_dir_tiff',
+    layer='BANDS-S2-L1C',
     bbox=betsiboka_bbox,
-    time='2017-12-15',
-    width=512,
-    height=856,
+    time=('2017-09-15','2017-12-15'),
+    resx='30m',
+    resy='30m',
+    maxcc=0.3,
+    image_format=MimeType.TIFF_d32f,
+    time_difference=datetime.timedelta(hours=2),
     config=config
 )
 
-wms_true_color_img = wms_true_color_request.get_data()
+wms_true_color_img = wms_true_color_request.get_data(save_data=True)
 
 print('Returned data is of type = %s and length %d.' % (type(wms_true_color_img), len(wms_true_color_img)))
 
 print('Single element in the list is of type {} and has shape {}'.format(type(wms_true_color_img[-1]),wms_true_color_img[-1].shape))
 
-plot_image(wms_true_color_img[-1])
+
+print('These %d images were taken on the following dates:' % len(wms_true_color_img))
+for index, date in enumerate(wms_true_color_request.get_dates()):
+    print(' - image %d was taken on %s' % (index, date))
+    
+import os
+os.listdir(wms_true_color_request.data_folder)
+
+plot_image(wms_true_color_img[2][:,:, 11])
