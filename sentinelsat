@@ -1,0 +1,27 @@
+!pip install datetime
+!pip install sentinelsat
+from sentinelsat import SentinelAPI, read_geojson, geojson_to_wkt
+from datetime import date
+
+api = SentinelAPI('userid', 'password', 'https://scihub.copernicus.eu/apihub/') #enter your user id and password
+
+#footprint = geojson_to_wkt(read_geojson('/content/drive/My Drive/geojson.geojson'))
+
+#custom footprint
+footprint = 'POLYGON((1.7578125 49.96535590991311, 1.03271484375 44.902577996288876, 8.98681640625 45.506346901083425, 8.173828125 50.00773901463687, 1.7578125 49.96535590991311))'
+products = api.query(footprint,
+                     date=('20170619', date(2017, 12, 29)),
+
+                     platformname='Sentinel-2',
+                     area_relation = 'intersects',
+                     limit = 10,
+                     cloudcoverpercentage=(0, 30))
+
+products_df = api.to_dataframe(products)
+
+# sort and limit to first 5 sorted products
+products_df_sorted = products_df.sort_values(['cloudcoverpercentage', 'ingestiondate'], ascending=[False, True])
+products_df_sorted = products_df_sorted.head(10)
+
+# download sorted and reduced products
+api.download_all(products_df_sorted.index)
