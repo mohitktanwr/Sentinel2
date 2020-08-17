@@ -25,3 +25,8 @@ products_df_sorted = products_df_sorted.head(10)
 
 # download sorted and reduced products
 api.download_all(products_df_sorted.index)
+
+#to atmospherically correct data. Location of sen2cor is required and location of .SAFE file
+import os
+cmd = "C:\\Users\\Username\\Downloads\\Sen2Cor-02.08.00-win64\\L2A_Process --resolution 10 C:\\Users\Username\\Downloads\\Sentinel_downloads\\S2B_MSIL1C_20200501T110619_N0209_R137_T28PGU_20200501T130453\\S2B_MSIL1C_20200501T110619_N0209_R137_T28PGU_20200501T130453.SAFE"
+os.system(cmd)
