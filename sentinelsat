@@ -30,3 +30,25 @@ api.download_all(products_df_sorted.index)
 import os
 cmd = "C:\\Users\\Username\\Downloads\\Sen2Cor-02.08.00-win64\\L2A_Process --resolution 10 C:\\Users\Username\\Downloads\\Sentinel_downloads\\S2B_MSIL1C_20200501T110619_N0209_R137_T28PGU_20200501T130453\\S2B_MSIL1C_20200501T110619_N0209_R137_T28PGU_20200501T130453.SAFE"
 os.system(cmd)
+
+%tensorflow_version 1.x #https://colab.research.google.com/notebooks/tensorflow_version.ipynb
+#The default TensorFlow version in Colab switched from 1.x to 2.x on the 27th of March, 2020.
+
+% matplotlib inline
+# Clone the entire repo.
+!git clone https://github.com/sjliu68/sen2to10.git cloned-repo
+%cd cloned-repo
+!ls
+
+
+from google.colab import drive
+drive.mount('/content/drive')
+
+#move to cloned directory
+cd /content/cloned-repo/
+
+#resampling 20m bands to 10m and making tif files of them
+#wdir : directory with input jp2 images ; outdir : directory where we want to store results
+#do it for 20m and 10m images both but don't keep same out directories for both of them.
+%run sen2to10.py --wdir="/content/drive/My Drive/Sentinel_2/S2B_MSIL2A_20200529T052649_N0214_R105_T43QDA_20200529T095221/S2B_MSIL2A_20200529T052649_N0214_R105_T43QDA_20200529T095221.SAFE/GRANULE/L2A_T43QDA_A016862_20200529T053255/IMG_DATA/R10m" --outdir="/content/drive/My Drive/Sentinel_2/S2B_MSIL2A_20200529T052649_N0214_R105_T43QDA_20200529T095221/S2B_MSIL2A_20200529T052649_N0214_R105_T43QDA_20200529T095221.SAFE/GRANULE/L2A_T43QDA_A016862_20200529T053255/IMG_DATA/R20m" 
+#makes tiff files at output locations after increasing their resolution, then concatinate them
